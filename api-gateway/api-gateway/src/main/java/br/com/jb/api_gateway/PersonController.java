@@ -1,30 +1,48 @@
 package br.com.jb.api_gateway;
 
-import br.com.jb.api_gateway.exception.UnsupportedMathOperationException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import br.com.jb.api_gateway.model.Person;
+import br.com.jb.api_gateway.service.PersonServices;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import static br.com.jb.api_gateway.service.MathService.convertToDouble;
-import static br.com.jb.api_gateway.service.MathService.validaNumber;
+import java.util.List;
 
 
 @RestController
+@RequestMapping("/person")
 public class PersonController {
 
-    private static final String template = "Hello %s!";
-    private final AtomicLong counter = new AtomicLong();
+    @Autowired
+    private PersonServices service;
 
-    @RequestMapping(value = "/sum/{numberOne}/{numberTwo}", method = RequestMethod.GET)
-    public Double sum(@PathVariable(value = "numberOne") String numberOne, @PathVariable(value = "numberTwo") String numberTwo) throws Exception {
+    @RequestMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Person findById(@PathVariable(value = "id") String id ) {
 
-        validaNumber(numberOne, numberTwo);
-
-        return convertToDouble(numberOne) + convertToDouble(numberTwo);
+        return service.findById(id);
     }
+
+    @GetMapping
+    public List<Person> findAll() {return service.findAll();}
+
+
+    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Person create(@RequestBody Person person) {
+        return service.create(person);
+    }
+
+    @PutMapping(value = "/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Person update(@RequestBody Person person) {
+        return service.update(person);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public void delete(@PathVariable String id) {
+        service.delete(id);
+    }
+
+
+
 
 
 }
