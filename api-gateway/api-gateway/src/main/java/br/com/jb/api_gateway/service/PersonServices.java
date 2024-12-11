@@ -1,68 +1,44 @@
 package br.com.jb.api_gateway.service;
 
 import br.com.jb.api_gateway.model.Person;
+import br.com.jb.api_gateway.repositories.PersonRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 @Service
 public class PersonServices {
 
-    private final AtomicLong counter = new AtomicLong();
     private Logger logger = Logger.getLogger(PersonServices.class.getName());
 
+    @Autowired
+    private PersonRepository repository;
 
+    @Autowired
+    private Person person;
 
-    public Person findById(String id) {
+    public Optional<Person> findById(Long id) {
         logger.info("Buscando pessoa");
-        Person person = new Person();
-        person.setId(counter.incrementAndGet());
-        person.setAddress("Rua das flores");
-        person.setGender("Masculino");
-        person.setFirstName("José");
-        person.setLastName("da Silva");
-        return person;
+        return repository.findById(id);
     }
 
     public List<Person> findAll() {
-        logger.info("Find all people");
-        List<Person> persons = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            Person person = mockPerson(i);
-            persons.add(person);
-        }
-        return persons;
+        return repository.findAll();
     }
 
     public Person create(Person person) {
-
-        return person;
+        return repository.saveAndFlush(person);
     }
 
     public Person update(Person person) {
-
-        return person;
+        return repository.saveAndFlush(person);
     }
 
-    public void delete(String id) {
-        logger.info("Deleting person id: "+id);
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
-
-
-
-
-    private Person mockPerson(int i) {
-        Person person = new Person();
-        person.setId(counter.incrementAndGet());
-        person.setAddress("Adress " + i);
-        person.setGender("Masculino");
-        person.setFirstName("First name " + i);
-        person.setLastName("Last name "+i);
-        return person;
-    }
-
-
 }

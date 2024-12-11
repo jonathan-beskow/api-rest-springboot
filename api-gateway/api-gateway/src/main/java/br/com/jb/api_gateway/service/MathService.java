@@ -1,6 +1,6 @@
 package br.com.jb.api_gateway.service;
 
-import br.com.jb.api_gateway.exception.UnsupportedMathOperationException;
+import br.com.jb.api_gateway.exception.ResourceNotFoundException;
 
 public class MathService {
 
@@ -22,7 +22,7 @@ public class MathService {
     }
 
     public static void validaNumber(String numberOne, String numberTwo) {
-        if (!isNumeric(numberOne) || !isNumeric(numberTwo)) throw new UnsupportedMathOperationException("Insira um valor numérico");
+        if (!isNumeric(numberOne) || !isNumeric(numberTwo)) throw new ResourceNotFoundException("Insira um valor numérico");
     }
 
 
