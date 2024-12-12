@@ -1,8 +1,10 @@
 package br.com.jb.api_gateway.service;
 
 import br.com.jb.api_gateway.data.vo.v1.PersonVO;
+import br.com.jb.api_gateway.data.vo.v2.PersonVOV2;
 import br.com.jb.api_gateway.exception.ResourceNotFoundException;
 import br.com.jb.api_gateway.mapper.DozerMapper;
+import br.com.jb.api_gateway.mapper.custom.PersonMapper;
 import br.com.jb.api_gateway.model.Person;
 import br.com.jb.api_gateway.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ public class PersonServices {
     private final Logger logger = Logger.getLogger(PersonServices.class.getName());
     @Autowired
     private PersonRepository repository;
+
+    @Autowired
+    private PersonMapper mapper;
 
     public PersonVO findById(Long id) {
         logger.info("Buscando pessoa");
@@ -50,5 +55,10 @@ public class PersonServices {
             throw new ResourceNotFoundException("No records found for this id");
         }
 
+    }
+
+    public PersonVOV2 createV2(PersonVOV2 person) {
+        var entity = mapper.convertVOToEntity(person);
+        return mapper.convertEntityToVO(repository.saveAndFlush(entity));
     }
 }

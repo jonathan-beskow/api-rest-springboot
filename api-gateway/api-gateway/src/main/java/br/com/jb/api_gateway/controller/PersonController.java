@@ -1,6 +1,7 @@
 package br.com.jb.api_gateway.controller;
 
 import br.com.jb.api_gateway.data.vo.v1.PersonVO;
+import br.com.jb.api_gateway.data.vo.v2.PersonVOV2;
 import br.com.jb.api_gateway.service.PersonServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -44,8 +45,21 @@ public class PersonController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping(value = "/v2", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PersonVOV2> createV2(@RequestBody PersonVOV2 person) {
+        return ResponseEntity.created(getCurrentUri(person)).body(service.createV2(person));
+    }
+
 
     public static URI getCurrentUri(PersonVO personId) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(personId.getId())
+                .toUri();
+    }
+
+    public static URI getCurrentUri(PersonVOV2 personId) {
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
