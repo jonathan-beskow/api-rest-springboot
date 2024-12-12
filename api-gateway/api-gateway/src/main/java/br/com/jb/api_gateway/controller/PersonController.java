@@ -1,13 +1,15 @@
 package br.com.jb.api_gateway.controller;
 
-import br.com.jb.api_gateway.model.Person;
+import br.com.jb.api_gateway.data.vo.v1.PersonVO;
 import br.com.jb.api_gateway.service.PersonServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -18,25 +20,36 @@ public class PersonController {
     private PersonServices service;
 
     @RequestMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Optional<Person> findById(@PathVariable(value = "id") Long id ) {
+    public PersonVO findById(@PathVariable(value = "id") Long id ) {
         return service.findById(id);
     }
 
     @GetMapping
-    public List<Person> findAll() {return service.findAll();}
+    public List<PersonVO> findAll() {return service.findAll();}
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Person create(@RequestBody Person person) {
-        return service.create(person);
+    public ResponseEntity<PersonVO> create(@RequestBody PersonVO person) {
+        return ResponseEntity.created(getCurrentUri(person)).body(service.create(person));
     }
 
-    @PutMapping(value = "/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Person update(@RequestBody Person person) {
-        return service.update(person);
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PersonVO> update(@RequestBody PersonVO person) {
+        return ResponseEntity.ok().body(service.update(person));
+
     }
 
     @DeleteMapping(value = "/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    public static URI getCurrentUri(PersonVO personId) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(personId.getId())
+                .toUri();
     }
 }
