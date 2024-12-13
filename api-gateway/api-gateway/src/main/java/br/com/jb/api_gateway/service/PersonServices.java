@@ -2,6 +2,7 @@ package br.com.jb.api_gateway.service;
 
 import br.com.jb.api_gateway.controller.PersonController;
 import br.com.jb.api_gateway.data.vo.v1.PersonVO;
+import br.com.jb.api_gateway.exception.RequiredObjectIsNullException;
 import br.com.jb.api_gateway.exception.ResourceNotFoundException;
 import br.com.jb.api_gateway.mapper.DozerMapper;
 import br.com.jb.api_gateway.model.Person;
@@ -41,6 +42,9 @@ public class PersonServices {
     }
 
     public PersonVO create(PersonVO person) {
+
+        if(person == null) throw new RequiredObjectIsNullException();
+
         var entity = DozerMapper.parseObject(person, Person.class);
         var vo = DozerMapper.parseObject(repository.saveAndFlush(entity), PersonVO.class);
         vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
@@ -48,6 +52,9 @@ public class PersonServices {
     }
 
     public PersonVO update(PersonVO person) {
+
+        if(person == null) throw new RequiredObjectIsNullException();
+
         var entity = repository.findById(person.getKey()).orElseThrow(()-> new ResourceNotFoundException("No Records found for this id"));
         entity.setFirstName(person.getFirstName());
         entity.setLastName(person.getLastName());
